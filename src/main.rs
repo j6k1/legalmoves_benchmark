@@ -8,7 +8,7 @@ use usiagent::protocol::*;
 use usiagent::event::*;
 use usiagent::shogi::*;
 
-const DEPTH:u32 = 3;
+const DEPTH:u32 = 4;
 const INITIAL_SFEN:&'static str = "sfen l6nl/5+P1gk/2np1S3/p1p4Pp/3P2Sp1/1PPb2P1P/P5GS1/R8/LN4bKL w RGgsn5p 1";
 
 fn main() {
@@ -40,7 +40,7 @@ fn main() {
 
 	let mvs:Vec<LegalMove> = Rule::legal_moves_all(&teban, &banmen, &mc);
 
-	let count = process_moves(teban,&banmen,&mc,&mvs,DEPTH);
+	let count = process_moves(teban,&banmen,&mc,&mvs,DEPTH-1);
 
 	let elapsed = start_time.elapsed();
 
