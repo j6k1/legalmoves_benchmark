@@ -1,0 +1,2 @@
+# legalmoves_benchmark
+USIAgentでの合法手生成のベンチマーク
