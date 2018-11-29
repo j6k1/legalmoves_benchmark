@@ -50,6 +50,40 @@ fn main() {
 	println!("{}.{:?}秒経過しました。", elapsed.as_secs(), elapsed.subsec_nanos() / 1_000_000);
 	println!("{}個の指し手を生成しました。", count);
 	println!("1秒あたり{}個の指し手を生成しました。", count_scaled / elapsed_scaled);
+
+	println!("win_only_moves...");
+
+	let mut count = 0;
+
+	count += Rule::win_only_moves(&teban, &banmen).len();
+	count += process_moves_with_win_only_moves(teban,&banmen,&mc,&mvs,DEPTH-2,count);
+
+	let elapsed = start_time.elapsed();
+
+	let count_scaled = count as u128 * 1000_000_000;
+	let elapsed_scaled = elapsed.as_secs() as u128 * 1000_000_000 + elapsed.subsec_nanos() as u128;
+
+	println!("{}.{:?}秒経過しました。", elapsed.as_secs(), elapsed.subsec_nanos() / 1_000_000);
+	println!("{}個の指し手を生成しました。", count);
+	println!("1秒あたり{}個の指し手を生成しました。", count_scaled / elapsed_scaled);
+
+	println!("oute_only_moves...");
+
+	let mut count = 0;
+
+	count += Rule::oute_only_moves_all(&teban, &banmen, &mc).len();
+	count += process_moves_with_oute_only_moves(teban,&banmen,&mc,&mvs,DEPTH-2,count);
+
+	let elapsed = start_time.elapsed();
+
+	let count_scaled = count as u128 * 1000_000_000;
+	let elapsed_scaled = elapsed.as_secs() as u128 * 1000_000_000 + elapsed.subsec_nanos() as u128;
+
+	println!("{}.{:?}秒経過しました。", elapsed.as_secs(), elapsed.subsec_nanos() / 1_000_000);
+	println!("{}個の指し手を生成しました。", count);
+	println!("1秒あたり{}個の指し手を生成しました。", count_scaled / elapsed_scaled);
+
+	println!("oute_only_moves...");
 }
 
 fn process_moves(teban:Teban, banmen:&Banmen, mc:&MochigomaCollections, mvs:&Vec<LegalMove>, depth:u32) -> usize {
@@ -66,6 +100,55 @@ fn process_moves(teban:Teban, banmen:&Banmen, mc:&MochigomaCollections, mvs:&Vec
 			(ref next,ref mc,_) => {
 				let mvs:Vec<LegalMove> = Rule::legal_moves_all(&teban, next, mc);
 				count += process_moves(teban.opposite(),next,mc,&mvs,depth-1);
+			}
+		}
+	}
+
+	count
+}
+
+fn process_moves_with_win_only_moves(teban:Teban,
+									 banmen:&Banmen, mc:&MochigomaCollections,
+									 mvs:&Vec<LegalMove>, depth:u32, count:usize) -> usize {
+	if depth == 0 {
+		return count;
+	}
+
+	let mut count = 0;
+
+	for m in mvs {
+		let next = Rule::apply_move_none_check(banmen,&teban,mc,&m.to_move());
+
+		match next {
+			(ref next,ref mc,_) => {
+				let mvs:Vec<LegalMove> = Rule::legal_moves_all(&teban, next, mc);
+				let count_win_only = Rule::win_only_moves(&teban, next).len();
+				count += process_moves_with_win_only_moves(teban.opposite(),next,mc,&mvs,depth-1,count_win_only);
+			}
+		}
+	}
+
+	count
+}
+
+
+fn process_moves_with_oute_only_moves(teban:Teban,
+										banmen:&Banmen, mc:&MochigomaCollections,
+										mvs:&Vec<LegalMove>, depth:u32, count:usize) -> usize {
+	if depth == 0 {
+		return count;
+	}
+
+	let mut count = 0;
+
+	for m in mvs {
+		let next = Rule::apply_move_none_check(banmen,&teban,mc,&m.to_move());
+
+		match next {
+			(ref next,ref mc,_) => {
+				let mvs:Vec<LegalMove> = Rule::legal_moves_all(&teban, next, mc);
+				let count_oute_only = Rule::oute_only_moves_all(&teban, next, mc).len();
+				count += process_moves_with_oute_only_moves(teban.opposite(),next,mc,&mvs,depth-1,count_oute_only);
 			}
 		}
 	}
