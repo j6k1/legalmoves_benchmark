@@ -82,8 +82,6 @@ fn main() {
 	println!("{}.{:?}秒経過しました。", elapsed.as_secs(), elapsed.subsec_nanos() / 1_000_000);
 	println!("{}個の指し手を生成しました。", count);
 	println!("1秒あたり{}個の指し手を生成しました。", count_scaled / elapsed_scaled);
-
-	println!("oute_only_moves...");
 }
 
 fn process_moves(teban:Teban, banmen:&Banmen, mc:&MochigomaCollections, mvs:&Vec<LegalMove>, depth:u32) -> usize {
