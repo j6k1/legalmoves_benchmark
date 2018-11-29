@@ -53,10 +53,14 @@ fn main() {
 
 	println!("win_only_moves...");
 
+	let mut start_time = Instant::now();
+
 	let mut count = 0;
 
 	count += Rule::win_only_moves(&teban, &banmen).len();
-	count += process_moves_with_win_only_moves(teban,&banmen,&mc,&mvs,DEPTH-2,count);
+	let (c,t) = process_moves_with_win_only_moves(teban,&banmen,&mc,&mvs,DEPTH-1,count,start_time);
+	count += c;
+	start_time = t;
 
 	let elapsed = start_time.elapsed();
 
@@ -69,10 +73,14 @@ fn main() {
 
 	println!("oute_only_moves...");
 
+	let mut start_time = Instant::now();
+
 	let mut count = 0;
 
 	count += Rule::oute_only_moves_all(&teban, &banmen, &mc).len();
-	count += process_moves_with_oute_only_moves(teban,&banmen,&mc,&mvs,DEPTH-2,count);
+	let (c,t) = process_moves_with_oute_only_moves(teban,&banmen,&mc,&mvs,DEPTH-1,count,start_time);
+	count += c;
+	start_time = t;
 
 	let elapsed = start_time.elapsed();
 
@@ -107,9 +115,9 @@ fn process_moves(teban:Teban, banmen:&Banmen, mc:&MochigomaCollections, mvs:&Vec
 
 fn process_moves_with_win_only_moves(teban:Teban,
 									 banmen:&Banmen, mc:&MochigomaCollections,
-									 mvs:&Vec<LegalMove>, depth:u32, count:usize) -> usize {
+									 mvs:&Vec<LegalMove>, depth:u32, count:usize, mut time:Instant) -> (usize,Instant) {
 	if depth == 0 {
-		return count;
+		return (count,time);
 	}
 
 	let mut count = 0;
@@ -119,22 +127,27 @@ fn process_moves_with_win_only_moves(teban:Teban,
 
 		match next {
 			(ref next,ref mc,_) => {
+				let st = Instant::now();
 				let mvs:Vec<LegalMove> = Rule::legal_moves_all(&teban, next, mc);
+				let elapsed = st.elapsed();
+				time = time + elapsed;
 				let count_win_only = Rule::win_only_moves(&teban, next).len();
-				count += process_moves_with_win_only_moves(teban.opposite(),next,mc,&mvs,depth-1,count_win_only);
+				let (c,t) = process_moves_with_win_only_moves(teban.opposite(),next,mc,&mvs,depth-1,count_win_only,time);
+				count += c;
+				time = t;
 			}
 		}
 	}
 
-	count
+	(count,time)
 }
 
 
 fn process_moves_with_oute_only_moves(teban:Teban,
 										banmen:&Banmen, mc:&MochigomaCollections,
-										mvs:&Vec<LegalMove>, depth:u32, count:usize) -> usize {
+										mvs:&Vec<LegalMove>, depth:u32, count:usize, mut time:Instant) -> (usize,Instant) {
 	if depth == 0 {
-		return count;
+		return (count,time);
 	}
 
 	let mut count = 0;
@@ -144,12 +157,17 @@ fn process_moves_with_oute_only_moves(teban:Teban,
 
 		match next {
 			(ref next,ref mc,_) => {
+				let st = Instant::now();
 				let mvs:Vec<LegalMove> = Rule::legal_moves_all(&teban, next, mc);
+				let elapsed = st.elapsed();
+				time = time + elapsed;
 				let count_oute_only = Rule::oute_only_moves_all(&teban, next, mc).len();
-				count += process_moves_with_oute_only_moves(teban.opposite(),next,mc,&mvs,depth-1,count_oute_only);
+				let (c,t) = process_moves_with_oute_only_moves(teban.opposite(),next,mc,&mvs,depth-1,count_oute_only,time);
+				count += c;
+				time = t;
 			}
 		}
 	}
 
-	count
+	(count,time)
 }
