@@ -127,11 +127,11 @@ fn process_moves_with_win_only_moves(teban:Teban,
 
 		match next {
 			(ref next,ref mc,_) => {
-				let st = Instant::now();
 				let mvs:Vec<LegalMove> = Rule::legal_moves_all(&teban, next, mc);
+				let st = Instant::now();
+				let count_win_only = Rule::win_only_moves(&teban, next).len();
 				let elapsed = st.elapsed();
 				time = time + elapsed;
-				let count_win_only = Rule::win_only_moves(&teban, next).len();
 				let (c,t) = process_moves_with_win_only_moves(teban.opposite(),next,mc,&mvs,depth-1,count_win_only,time);
 				count += c;
 				time = t;
@@ -157,11 +157,11 @@ fn process_moves_with_oute_only_moves(teban:Teban,
 
 		match next {
 			(ref next,ref mc,_) => {
-				let st = Instant::now();
 				let mvs:Vec<LegalMove> = Rule::legal_moves_all(&teban, next, mc);
+				let st = Instant::now();
+				let count_oute_only = Rule::oute_only_moves_all(&teban, next, mc).len();
 				let elapsed = st.elapsed();
 				time = time + elapsed;
-				let count_oute_only = Rule::oute_only_moves_all(&teban, next, mc).len();
 				let (c,t) = process_moves_with_oute_only_moves(teban.opposite(),next,mc,&mvs,depth-1,count_oute_only,time);
 				count += c;
 				time = t;
