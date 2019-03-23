@@ -53,16 +53,15 @@ fn main() {
 
 	println!("win_only_moves...");
 
-	let mut start_time = Instant::now();
+	let start_time = Instant::now();
 
 	let mut count = 0;
 
 	count += Rule::win_only_moves(&teban, &banmen).len();
 	let (c,t) = process_moves_with_win_only_moves(teban,&banmen,&mc,&mvs,DEPTH-1,count,start_time);
 	count += c;
-	start_time = t;
 
-	let elapsed = start_time.elapsed();
+	let elapsed = t.duration_since(start_time);
 
 	let count_scaled = count as u128 * 1000_000_000;
 	let elapsed_scaled = elapsed.as_secs() as u128 * 1000_000_000 + elapsed.subsec_nanos() as u128;
@@ -73,16 +72,15 @@ fn main() {
 
 	println!("oute_only_moves...");
 
-	let mut start_time = Instant::now();
+	let start_time = Instant::now();
 
 	let mut count = 0;
 
 	count += Rule::oute_only_moves_all(&teban, &banmen, &mc).len();
 	let (c,t) = process_moves_with_oute_only_moves(teban,&banmen,&mc,&mvs,DEPTH-1,count,start_time);
 	count += c;
-	start_time = t;
 
-	let elapsed = start_time.elapsed();
+	let elapsed = t.duration_since(start_time);
 
 	let count_scaled = count as u128 * 1000_000_000;
 	let elapsed_scaled = elapsed.as_secs() as u128 * 1000_000_000 + elapsed.subsec_nanos() as u128;
