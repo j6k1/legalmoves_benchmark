@@ -87,7 +87,7 @@ fn main() {
 
 	count += c;
 
-	let elapsed = t.duration_since(start_time);
+	let elapsed = start_time.elapsed();
 
 	let count_scaled = count as u128 * 1000_000_000;
 	let elapsed_scaled = elapsed.as_secs() as u128 * 1000_000_000 + elapsed.subsec_nanos() as u128;
