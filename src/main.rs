@@ -83,7 +83,7 @@ fn main() {
 	let mut count = 0;
 
 	let _ = Rule::is_nyugyoku_win(&state, teban, &mc, &None);
-	let c = process_moves_with_is_nyugyoku_win(teban,&state,&mc,&mvs,DEPTH-1,count,start_time);
+	let c = process_moves_with_is_nyugyoku_win(teban,&state,&mc,&mvs,DEPTH-1);
 
 	count += c;
 
@@ -179,7 +179,7 @@ fn process_moves_with_oute_only_moves(teban:Teban,
 
 fn process_moves_with_is_nyugyoku_win(teban:Teban,
 								   state:&State, mc:&MochigomaCollections,
-								   mvs:&Vec<LegalMove>, depth:u32, count:usize, mut time:Instant) -> usize {
+								   mvs:&Vec<LegalMove>, depth:u32) -> usize {
 	if depth == 0 {
 		return mvs.len();
 	}
@@ -193,7 +193,7 @@ fn process_moves_with_is_nyugyoku_win(teban:Teban,
 			(ref next,ref mc,_) => {
 				let _ = Rule::is_nyugyoku_win(next,teban,mc,&None);
 				let mvs:Vec<LegalMove> = Rule::legal_moves_all(teban, next, mc);
-				count += process_moves(teban.opposite(),next,mc,&mvs,depth-1);
+				count += process_moves_with_is_nyugyoku_win(teban.opposite(),next,mc,&mvs,depth-1);
 			}
 		}
 	}
